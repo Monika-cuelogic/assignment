@@ -1,0 +1,332 @@
+<html>
+<head>
+<script src="session_check.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<h2>To Do List</h2>
+
+
+<table style="width: 100%;">
+<tr>
+	<td>
+		<a href="profile.html">Profile</a>&nbsp;&nbsp;&nbsp;
+		<a href="#" onclick="logout()">Logout</a>&nbsp;&nbsp;&nbsp;
+		<a href="to_do_list.html">To Do List</a>
+	</td>
+	
+</tr>
+<tr>
+	<td></td>
+</tr>
+<tr>
+	<td>
+		<div id="pro_msg"></div>
+	</td>	
+</tr>
+<tr>
+	<td>
+		<a href="to_do.html">Add</a>&nbsp;&nbsp;&nbsp;
+		<a href="javascript:void(0);" onclick="delete_selected();">Delete Multiple</a>&nbsp;&nbsp;&nbsp;
+		<select placeholder="Select Filter Date" id="filter_date">
+		<option value="1">Date</option>
+		<option value="6">Reminder Date</option>
+		</select>&nbsp;&nbsp;&nbsp;
+		Start Date:<input type = "date" name = "start_dt" id="start_dt" onchange="search_dates()">&nbsp;&nbsp;&nbsp;
+		End Date:<input type = "date" name = "end_dt" id="end_dt" onchange="search_dates()">&nbsp;&nbsp;&nbsp;
+		Status:<select placeholder="Select Status" id="status">&nbsp;&nbsp;&nbsp;
+		<option value="is_done">Done</option>
+		<option value="pending">Pending</option>
+		</select>&nbsp;&nbsp;&nbsp;
+		Categories:<select placeholder="Select Category" id="cat" >&nbsp;&nbsp;&nbsp;
+		<option value="one">One</option>
+		<option value="two">Two</option>
+		<option value="three">Three</option>
+		</select>&nbsp;&nbsp;&nbsp;
+	</td>
+
+</tr>
+<tr>
+<td>
+
+	<table id="list_to_do_section" border="1" style="width: 100%;">
+	
+	</table>
+
+
+</td>
+</tr>
+
+</table>
+</body>
+<script>
+var srt;
+srt = "asc";
+var row_id = 0, cellcnt = 0, cnt = 0;
+var get_list = localStorage.getItem("to_do_list");
+var get_list_details = JSON.parse(get_list);
+var tab = document.getElementById("list_to_do_section");
+var row = tab.insertRow(cnt);
+var head = [
+"<input type='checkbox' name='all' onclick='select_all()'>", 
+"<input type='button' value='Date' onclick='sort_index(1)' class='tab_sort'>", 
+"Category", 
+"<input type='button' value='Title' onclick='sort_index(3)' class='tab_sort'>", 
+"Is Done", 
+"Is Public", 
+"<input type='button' value='Reminder Date' onclick='sort_index(6)' class='tab_sort'>", 
+"Is Reminder", 
+"Image", 
+"Operations"];
+for(var i = 0 ; i < head.length ; i++)
+{
+	cell = row.insertCell(i);
+	cell.innerHTML = head[i];
+}
+
+for(id in get_list_details)
+{		
+	if(get_list_details[id] == null || get_list_details[id] == "")
+	{}
+	else{
+		row_id++;
+		cellcnt = 0;
+		row = tab.insertRow(row_id);
+		
+		for(det in get_list_details[id])
+		{
+			if(cellcnt == 0)
+			{
+				cell = row.insertCell(cellcnt);
+				cell.innerHTML = "<input type='checkbox' name='chk[]' value='"+id+"' id='row_"+id+"'>";
+				cellcnt++;
+			}
+			if(det == null || det.length == 0){}
+			else
+			if(det == "prof_img"){}
+			else
+			if(det == "base64_img"){
+				cell = row.insertCell(cellcnt);
+				cell.innerHTML = "<img src='"+get_list_details[id][det]+"' style='height:50px; width:50px;'>";
+				cellcnt++;
+			}
+			else
+			{
+			cell = row.insertCell(cellcnt);
+			cell.innerHTML = get_list_details[id][det];
+			cellcnt++;
+			}
+			
+		}
+		row.id = id;
+		cell = row.insertCell(cellcnt);
+		cell.innerHTML = "<input type='button' name='edit' value='Edit' onclick='operation("+id+",\"edit\")'><input type='button' name='delete' value='Delete' onclick='operation("+id+",\"delete\")'>";	
+	}
+	
+}
+
+function operation(tab_id, value)
+{
+	if(value == "delete")
+	{
+		var s = confirm("Are you sure you want to delete?");
+		if (s == true) 
+		{
+			get_list_details[tab_id] = "";	
+			delete get_list_details[chk[i].value];
+			get_list_details = get_list_details.filter(
+				function(null_val) 
+				{ 
+					return null_val !== null;
+				});
+			localStorage.setItem("to_do_list",JSON.stringify(get_list_details));
+			document.getElementById(tab_id).style.display = "none";
+		}
+	}
+	else
+	{
+		window.location.href = "edit_to_do.html?id="+tab_id;
+	}
+}
+
+function delete_selected()
+{
+	var s = confirm("Are you sure you want to delete?");
+	if (s == true) 
+	{
+	    	var chk = document.getElementsByName("chk[]");
+		for(var i = 0 ; i < chk.length ; i++)
+		{
+			if(chk[i].checked == true)
+			{
+				console.log(get_list_details);
+				get_list_details[chk[i].value] = "";
+				delete get_list_details[chk[i].value];
+				document.getElementById(chk[i].value).style.display = "none";
+				console.log(get_list_details);
+			}
+		}
+		get_list_details = get_list_details.filter(
+		function(null_val) 
+		{ 
+			return null_val !== null;
+		}); 				
+		localStorage.setItem("to_do_list",JSON.stringify(get_list_details));
+	} 
+	else
+	{
+		//deselect all selected
+	}
+	
+}
+function select_all()
+{
+	var chk = document.getElementsByName("chk[]");
+	for(var i = 0 ; i < chk.length ; i++)
+	{
+		if(chk[i].checked == true)
+		{
+			document.getElementById("row_"+chk[i].value).checked = false;
+		}
+		else
+		{
+			document.getElementById("row_"+chk[i].value).checked = true;
+		}
+	}
+}
+function sort_index(index)
+{
+	var ind = index;
+	var tab = document.getElementById("list_to_do_section");
+	var parse_vals = true, should_parse = true;
+	var i, rows, curr, next;
+	if(srt == "asc"){
+		while(parse_vals)
+		{
+			rows = tab.rows;
+			parse_vals = false;
+			for(i = 1 ; i < rows.length ; i++)
+			{
+				should_parse = false;
+				try{
+					if(ind == null){throw "ind is not a valid cell number";}
+					next = rows[i+1].getElementsByTagName("td")[ind];
+					
+				}
+				catch(err)
+				{
+					console.log(err.message);
+				}
+				curr = rows[i].getElementsByTagName("td")[ind];
+						
+				if(curr.innerHTML > next.innerHTML)
+				{
+					should_parse = true;
+					break;
+				}
+			}
+			if(should_parse == true)
+			{
+				rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+	      			parse_vals = true;
+			}
+		}	
+	}
+	else
+	{}
+}
+
+function search_dates()
+{
+	var op = document.getElementById("filter_date");
+	var sel_val = op.options[op.selectedIndex].value;
+	var s = document.getElementById("start_dt").value;
+	var e = document.getElementById("end_dt").value;
+	try{
+		if(e == null || e.length == 0) throw "End Date is empty";
+		if(s == null || s.length == 0) throw "Start Date is empty";
+	}
+	catch(err){
+		console.log(err);
+	}
+
+	
+	var tab = document.getElementById("list_to_do_section");
+	var rows = tab.rows;
+	if(s.length != 0 && e.length != 0){
+		
+		for(i = 1 ; i < rows.length ; i++)
+		{
+			rows[i].style.display = "none";
+			curr = rows[i].getElementsByTagName("td")[sel_val];
+						
+			if(curr.innerHTML >= s && curr.innerHTML <= e)
+			{
+				rows[i].style.display = "table-row";
+			}
+		}
+	}
+	try{
+		if(e.length != 0 && s.length != 0 && s > e) throw "End Date should be less than Start Date.";
+	}
+	catch(err1){
+		var tab = document.getElementById("list_to_do_section");
+		row1 = tab.insertRow(1);
+		cell = row1.insertCell(0);
+		cell.innerHTML = err1;
+		cell.id = "err_msg";
+		cell.align = "center";
+		document.getElementById("err_msg").colSpan = tab.rows[0].cells.length;
+	}
+}
+function show_status()
+{
+	var status = this.options[this.selectedIndex].value;
+	var tab = document.getElementById("list_to_do_section");
+	var rows = tab.rows;
+	//alert(status);
+	//if(s.length != 0 && e.length != 0){
+		for(i = 1 ; i < rows.length ; i++)
+		{
+			d = rows[i].getElementsByTagName("td")[4];
+			d1 = rows[i].getElementsByTagName("td")[1];
+			var dt = new Date();
+			curr = dt.getFullYear()+"-"+(dt.getMonth()+1)+"-"+dt.getDate();
+			if(status == "is_done")
+			{
+				(d.innerHTML == "yes") ? rows[i].style.display = "table-row" : rows[i].style.display = "none";	
+			}
+			else if(status == "pending")
+			{				
+				
+				(d1.innerHTML > curr) ? rows[i].style.display = "table-row" : rows[i].style.display = "none";	
+			}
+		}
+	//}
+}
+document.getElementById("status").addEventListener("change",show_status);
+var val;
+function search_cat(){
+	val = this.options[this.selectedIndex].value;
+	try{
+		if(val == null || val.length == 0) throw "No categories selected";
+	}
+	catch(err)
+	{
+		console.error(err.Message);
+	}
+	var tab = document.getElementById("list_to_do_section");
+	var rows = tab.rows;
+	for(i = 1 ; i < rows.length ; i++)
+	{
+		curr = rows[i].getElementsByTagName("td")[2];
+		rows[i].style.display = "none";
+		vals = curr.innerHTML.split(",");
+		vals.forEach(function(cat_val){ (cat_val == val) ? rows[i].style.display = "table-row" : "" ; });
+	}
+}
+document.getElementById("cat").addEventListener("change", search_cat);
+
+</script>
+</html>

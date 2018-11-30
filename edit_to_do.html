@@ -1,0 +1,258 @@
+<html>
+<head>
+<script src="session_check.js"></script>
+</head>
+<body>
+
+<h2>To Do List</h2>
+
+
+<table>
+<tr>
+	<td>
+		<a href="profile.html" >Profile</a>&nbsp;&nbsp;&nbsp;
+		<a href="#" onclick="logout()">Logout</a>&nbsp;&nbsp;&nbsp;
+		<a href="to_do_list.html">To Do List</a>
+	</td>
+	
+</tr>
+<tr>
+<td>
+	<form id="to_do_form_edit">
+	<table id="login_section">
+	<tr>
+		<td>
+		<div id="to_do_msg"></div>
+		</td>	
+	</tr>
+	<tr>
+		<td>
+  		Date:
+		</td>
+		<td>
+  		<input type="date" name="date" id="date" value="">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Categories:
+		</td>
+		<td>
+  		One: <input type="checkbox" name="checklist[]" id="one" value="one">
+		Two: <input type="checkbox" name="checklist[]" id="two" value="two">
+		Three: <input type="checkbox" name="checklist[]" id="three" value="three">
+  		</td>
+	</tr>
+	<tr>
+		<td>  
+		Title:
+		</td>
+		<td>
+		<input type="text" name="title" value="" id="title">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Is Done:
+		</td>
+		<td>
+  		<input type="checkbox" name="is_done" id="is_done" value="yes">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Is Reminder:
+		</td>
+		<td>
+  		<input type="checkbox" name="is_reminder" id="is_reminder" value="yes">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Reminder Date:
+		</td>
+		<td>
+  		<input type="date" name="r_date" id="r_date" value="">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Is Public:
+		</td>
+		<td>
+  		<input type="checkbox" name="is_public" id="is_public" value="yes">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+		Image:
+		</td>
+	</tr>
+	<tr>
+		<td>
+ 	 	<input type="file" name="prof_img" id="prof_img" >
+		<img src="" name="base_img" id="base_img" style="width:50px; height:50px;"/>
+		<input type="hidden" name="base64_img" id="base64_img" >
+		</td>
+  	</tr>
+	<tr>
+		<td>
+		<input type="button" value="Add" onclick="edit_to_do()">
+		</td>
+		
+	</tr>
+	</table>
+	</form>
+
+</td>
+</tr>
+</table>
+</body>
+<script>
+	var get_list = localStorage.getItem("to_do_list");
+	var get_list_details = JSON.parse(get_list);
+	
+	var url_string = window.location.href;
+	var url = new URL(url_string);
+	var c = url.searchParams.get("id");
+	var tab_id = c;
+
+	for(vals in get_list_details[tab_id])
+	{
+		if(vals == "checklist[]")
+		{
+			vals = get_list_details[tab_id][vals].split(",");
+			for(v in vals)
+			{	
+				try{	
+					document.getElementById(vals[v]).checked = true;
+				}
+				catch(err)
+				{
+					console.log(err);
+				}
+			}	
+		}
+		else if(vals == "prof_img"){}
+		else if(vals == "is_done")
+		{
+			if(get_list_details[tab_id][vals] == "yes") {
+				document.getElementById(vals).checked = true;
+			}
+		}
+		else if(vals == "is_reminder")
+		{
+			if(get_list_details[tab_id][vals] == "yes") {
+				document.getElementById(vals).checked = true;
+			}
+		}
+		else if(vals == "is_public")
+		{
+			if(get_list_details[tab_id][vals] == "yes") {
+				document.getElementById(vals).checked = true;
+			}
+		}
+		else if(vals == "base64_img")
+		{
+			document.getElementById("base_img").src = get_list_details[tab_id][vals];
+			document.getElementById("base64_img").value = get_list_details[tab_id][vals];
+		}
+		else if(vals != "")
+		{
+			document.getElementById(vals).value = get_list_details[tab_id][vals];
+		}
+	}
+	localStorage.setItem("to_do_list",JSON.stringify(get_list_details));
+function del()
+{
+	var get_list = localStorage.getItem("to_do_list");
+	var get_list_details = JSON.parse(get_list);
+	get_list_details = [];
+	localStorage.setItem("to_do_list", JSON.stringify(get_list_details));
+}
+function edit_to_do()
+{
+	var form_data = {};
+	var chk_arr = [];
+	var frm = document.getElementById("to_do_form_edit");
+	for(var i = 0 ; i < frm.elements.length ; i++ )
+	{
+		
+		if(frm.elements[i].name == "checklist[]" && chk_arr.length == 0)
+		{
+			var chk = document.getElementsByName("checklist[]");
+			
+			for(var j = 0 ; j < chk.length ; j++)
+			{
+				if(chk[j].checked == true)
+				{
+					chk_arr.push(chk[j].value);
+					
+				}
+			}
+			var chk_list = chk_arr.join();
+			form_data[frm.elements[i].name] = chk_list;
+		}
+		else if(frm.elements[i].name != "checklist[]")
+		{
+			if(frm.elements[i].name == "is_done")
+			{
+				if(document.getElementById("is_done").checked == true)
+				{
+					form_data[frm.elements[i].name] = frm.elements[i].value;
+				}
+				else
+				{
+					form_data[frm.elements[i].name] = "no";
+				}
+			}
+			else
+			if(frm.elements[i].name == "is_public")
+			{
+				if(document.getElementById("is_public").checked == true)
+				{
+					form_data[frm.elements[i].name] = frm.elements[i].value;
+				}
+				else
+				{
+					form_data[frm.elements[i].name] = "no";
+				}
+			}
+			else
+			if(frm.elements[i].name == "is_reminder")
+			{
+				if(document.getElementById("is_reminder").checked == true)
+				{
+					form_data[frm.elements[i].name] = frm.elements[i].value;
+				}
+				else
+				{
+					form_data[frm.elements[i].name] = "no";
+				}
+			}
+			else
+			form_data[frm.elements[i].name] = frm.elements[i].value;			
+		}
+	}
+	
+	get_list_details[tab_id] = form_data;
+	localStorage.setItem("to_do_list",JSON.stringify(get_list_details));
+	window.location.href = "to_do_list.html";
+}
+function add_base_64()
+{
+	if(this.files && this.files[0])
+	{
+		var rd = new FileReader();
+		rd.addEventListener("load",function(e){
+			
+			document.getElementById("base64_img").value = e.target.result;
+		});			
+		rd.readAsDataURL(this.files[0]);
+	}
+}
+document.getElementById("prof_img").addEventListener("change",add_base_64);
+
+
+</script>
+</html>

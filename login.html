@@ -1,0 +1,118 @@
+<html>
+<body>
+
+<h2>Login</h2>
+
+
+<table>
+<tr>
+<td>
+	<form id="login_form">
+	<table id="login_section">
+	<tr>
+		<td>
+		<div id="login_msg"></div>
+		</td>	
+	</tr>
+	<tr>
+		<td>
+  		Username/Email:
+		</td>
+		<td>
+  		<input type="text" name="username" id="username" value="">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Password:
+		</td>
+		<td>
+  		<input type="password" name="password" id="password" value="">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+		<input type="button" value="Login" onclick="login_user()">
+		</td>
+		<td>
+		<input type="button" value="Register" onclick="go_to_register()">
+		</td>
+	</tr>
+	</table>
+	</form>
+
+</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript">
+if(sessionStorage.length != 0)
+{
+	window.location.href = "profile.html";
+}
+var flag = 0;
+function go_to_register()
+{
+	try
+	{
+		window.location.href = "assignment.html";
+	}
+	catch(err)
+	{
+		alert(err.message);
+	}
+}
+function login_user()
+{
+	var form_fields = document.getElementById("login_form");
+	var j;	
+	for(j = 0 ; j < form_fields.elements.length ; j++)
+	{
+		if(form_fields.elements[j].value == null || form_fields.elements[j].value.length == 0)
+		{	
+			document.getElementsByName(form_fields.elements[j].name)[0].focus();
+			document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Please fill all the fields!</p>";
+			sessionStorage.clear();
+			return false;
+		}
+	}
+	var get_users = localStorage.getItem("user_register");
+	get_user_details = JSON.parse(get_users);
+	var username = document.getElementById("username").value;
+	var pass = document.getElementById("password").value;
+	var i;
+
+	for(i in get_user_details)
+	{
+		if(username !== i)
+		{
+			document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials!</p>";
+			sessionStorage.clear();
+			return false;
+		}
+		else
+		{
+			for(val in get_user_details[i])
+			{
+				if(val == "password")
+				{
+					if(get_user_details[i][val] != pass)
+					{
+						document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials!</p>";
+						sessionStorage.clear();
+						return false;
+					}
+				}				
+				sessionStorage.setItem(val,get_user_details[i][val]);	
+				//console.log("key -> " + val + "==Value -> " + get_user_details[i][val]);
+			}
+		}
+	}
+	console.log(sessionStorage.getItem('password'));
+	console.log(sessionStorage.getItem('username'));
+	console.log(sessionStorage.getItem('firstname'));
+	console.log(sessionStorage.getItem('lastname'));
+	window.location.href = "profile.html"
+}
+</script>
+</html>

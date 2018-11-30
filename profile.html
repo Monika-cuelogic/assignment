@@ -1,0 +1,224 @@
+<html>
+<head>
+<script src="session_check.js"></script>
+</head>
+<body>
+
+<h2>Profile</h2>
+
+
+<table>
+<tr>
+	<td>
+		<a href="profile.html">Profile</a>&nbsp;&nbsp;&nbsp;
+		<a href="#" onclick="logout()">Logout</a>&nbsp;&nbsp;&nbsp;
+		<a href="to_do_list.html">To Do List</a>
+	</td>
+	
+</tr>
+<tr>
+	<td>
+		<div id="pro_msg"></div>
+	</td>	
+</tr>
+<tr>
+<td>
+	<form id="profile">
+	<table id="profile_section">
+	
+	<tr>
+		<td>
+  		Username/Email:
+		</td>
+		<td>
+  		<input type="text" class="e_inactive" name="username" id="username" value="" disabled>
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		First name:
+		</td>
+		<td>
+  		<input type="text" class="e_active" name="firstname" id="firstname" value="" disabled >
+  		</td>
+	</tr>
+	<tr>
+		<td>  
+		Last name:
+		</td>
+		<td>
+		<input type="text" class="e_active" name="lastname" id="lastname" value="" disabled>
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Gender:
+		</td>
+	</tr>	
+	<tr>
+		<td >
+  		<label>Male: </label><input type="radio" disabled class="e_active " name="gender" id="Male" value="Male" >
+  		<label>Female: </label><input type="radio" disabled class="e_active " name="gender" id="Female" value="Female">
+		</td>
+	</tr>
+	<tr>
+		<td>
+  		Address:
+		</td>
+		<td>
+		<textarea class="e_active" name="address" id="address" disabled></textarea>
+		</td>
+  	</tr>
+  	<tr>
+		<td>
+		Profile Image:
+		</td>
+	</tr>
+	<tr>
+		<td>
+ 	 	<input type="file" class="e_active s_hidden" name="prof_img" id="prof_img" >
+		<img src="" id="p_img" style="width:50px; height: 50px;"/>
+		</td>
+  	</tr>
+	<tr>
+		<td>
+		<input type="hidden" name="base64_img" id="base64_img" />
+		</td>
+  	</tr>
+	<tr>
+		<td>
+		<input type="button" name="submit" value="Submit" class="s_hidden" id="submit" onclick="save_data()">
+		</td>
+	</tr>
+	</table>
+	</form>
+
+</td>
+</tr>
+<tr>
+	<td>
+		<input type="button" name="edit" value="Edit" id="edit_btn" onclick="enable_all()">
+	</td>
+	
+</tr>
+</table>
+</body>
+<script>
+
+var p_fields = document.getElementById("profile");
+
+//IIFE 
+(function(){
+	var i;
+	var x = document.getElementsByClassName("s_hidden");
+	for(var j = 0 ; j < x.length ; j++)
+	{
+		x[j].style.visibility = "hidden";
+	}
+
+
+	for(i = 0 ; i < p_fields.elements.length ; i++)
+	{
+		if(p_fields.elements[i].name == "gender")
+		{
+			document.getElementById(sessionStorage.getItem("gender")).checked = true;
+		}
+		else
+		if(p_fields.elements[i].name == "prof_img")
+		{
+			document.getElementById("p_img").src = sessionStorage.getItem("base64_img");
+		}
+		else
+		if(p_fields.elements[i].name != "submit")
+		{
+			document.getElementById(p_fields.elements[i].name).value = sessionStorage.getItem(p_fields.elements[i].name);	
+		}	
+	}
+})();
+
+
+
+function enable_all()
+{
+	for(i = 0 ; i < p_fields.elements.length ; i++)
+	{
+		if(p_fields.elements[i].name == "firstname" || p_fields.elements[i].name == "lastname" || p_fields.elements[i].name == "address")
+		{
+			document.getElementById(p_fields.elements[i].name).removeAttribute("disabled");
+		}
+	}
+	document.getElementById("Male").removeAttribute("disabled");
+	document.getElementById("Female").removeAttribute("disabled");
+	document.getElementById("prof_img").style.visibility = "visible";
+	document.getElementById("p_img").style.display = "none";
+	document.getElementById("submit").style.visibility = "visible";
+	document.getElementById("edit_btn").style.visibility = "hidden";
+}
+
+function save_data()
+{
+	var d = document.getElementById("profile");
+	var i, form_values = {};
+	for(i = 0 ; i < d.elements.length ; i++)
+	{
+		if(d.elements[i].value == "" || d.elements[i].value.length == 0)
+		{
+			console.log(d.elements[i].name);
+			document.getElementsByName(d.elements[i].name)[0].focus();
+			document.getElementById("pro_msg").innerHTML = "<p>Please fill all the fields!</p>";
+			return false;		
+		}
+		else
+		{
+			if(d.elements[i].name == "username")
+			{
+				curr_user = sessionStorage.getItem("username");
+				form_values[curr_user] = {};
+				form_values[curr_user][d.elements[i].name] = d.elements[i].value;	
+			}		
+			if(d.elements[i].value != "Submit")
+			{
+				
+				if(d.elements[i].name == "gender")
+				{
+					if(document.getElementById(d.elements[i].value).checked == true)
+					{
+						form_values[curr_user][d.elements[i].name] = d.elements[i].value;
+						sessionStorage.setItem(d.elements[i].name,d.elements[i].value);
+					}
+				}
+				else if(d.elements[i].name != "gender")
+				{
+					form_values[curr_user][d.elements[i].name] = d.elements[i].value;
+					sessionStorage.setItem(d.elements[i].name,d.elements[i].value);
+				}				
+				//console.log(d.elements[i].name);
+				console.log(d.elements[i].name +" = "+sessionStorage.getItem(d.elements[i].name));
+			}
+		}
+	}
+	var obj = form_values;
+	localStorage.setItem("user_register",JSON.stringify(obj));
+	document.getElementById("pro_msg").innerHTML = "User Updated Successfully!";
+	document.location.reload();
+}
+
+//Event Listeners
+function readFile() 
+{
+	if (this.files && this.files[0]) 
+	{
+		var fr= new FileReader();
+    
+    		fr.addEventListener("load", function(e) 
+		{
+			document.getElementById("base64_img").value = "";
+      			document.getElementById("base64_img").value = e.target.result;
+    		}); 
+    		fr.readAsDataURL( this.files[0] );
+  	}
+}
+document.getElementById("prof_img").addEventListener("change", readFile);
+
+</script>
+</html>

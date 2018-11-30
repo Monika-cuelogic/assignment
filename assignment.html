@@ -1,0 +1,201 @@
+<html>
+<head>
+
+</head>
+<body>
+
+<h2>Registration</h2>
+
+
+<table>
+<tr>
+	<td>
+		<div id="reg_msg"></div>
+	</td>	
+</tr>
+<tr>
+<td>
+	<form id="register">
+	<table id="register_section">
+	
+	<tr>
+		<td>
+  		Username/Email:
+		</td>
+		<td>
+  		<input type="text" name="username" value="" >
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Password:
+		</td>
+		<td>
+  		<input type="password" name="password" id="password" value="" onblur="compare_pass();">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Confirm Password:
+		</td>
+		<td>
+  		<input type="password" name="confirm_password" id="confirm_password" value="" onblur="check_similarity()">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		First name:
+		</td>
+		<td>
+  		<input type="text" name="firstname" value="" >
+  		</td>
+	</tr>
+	<tr>
+		<td>  
+		Last name:
+		</td>
+		<td>
+		<input type="text" name="lastname" value="" >
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Gender:
+		</td>
+	</tr>	
+	<tr>
+		<td>
+  		<label>Male: </label><input type="radio" name="gender" value="Male" checked>
+  		<label>Female: </label><input type="radio" name="gender" value="Female">
+  		</td>
+	</tr>
+	<tr>
+		<td>
+  		Address:
+		</td>
+		<td>
+		<textarea name="address" ></textarea>
+		</td>
+  	</tr>
+  	<tr>
+		<td>
+		Profile Image:
+		</td>
+	</tr>
+	<tr>
+		<td>
+ 	 	<input type="file" name="prof_img" id="prof_img" >
+		</td>
+  	</tr>
+	<tr>
+		<td>
+		<input type="hidden" name="base64_img" id="base64_img" />
+		</td>
+  	</tr>
+	<tr>
+		<td>
+		<input type="button" name="submit" value="Submit" onclick="save_data()">
+		</td>
+	</tr>
+	</table>
+	</form>
+
+</td>
+</tr>
+<tr>
+	<td>
+		<input type="button" name="login" value="Login" onclick="go_to_login()">
+	</td>
+</tr>
+</table>
+</body>
+<script type="text/javascript">
+function check_similarity()
+{
+	var pass = document.getElementById("password").value;
+	var c_pass = document.getElementById("confirm_password").value;
+	if(pass.length == 0)
+	{
+		document.getElementsByName("password")[0].focus();
+		document.getElementById("reg_msg").innerHTML = "<p class=''>Please enter password!</p>";
+		return false;
+	}
+	if(pass.length != 0 && c_pass.length != 0)
+	{
+		compare_pass();
+	}
+}
+function compare_pass()
+{
+	var pass = document.getElementById("password").value;
+	var c_pass = document.getElementById("confirm_password").value;
+	
+	if(c_pass.length != 0 && pass != c_pass)
+	{
+		document.getElementById("reg_msg").innerHTML = "<p class=''>Password mismatch!</p>";
+		return false;
+	}
+	document.getElementById("reg_msg").innerHTML = "";
+}
+function go_to_login()
+{
+	try
+	{
+		window.location.href = "login.html";
+	}
+	catch(err)
+	{
+		alert(err.message);
+	}
+}
+function save_data()
+{
+	var d = document.getElementById("register");
+	var i, form_values = {};
+	
+	for(i = 0 ; i < d.elements.length ; i++)
+	{
+		if(d.elements[i].value == "" || d.elements[i].value.length == 0)
+		{
+			console.log(d.elements[i].name);
+			document.getElementsByName(d.elements[i].name)[0].focus();
+			document.getElementById("reg_msg").innerHTML = "<p>Please fill all the fields!</p>";
+			return false;		
+		}
+		else
+		{
+			if(d.elements[i].name == "username")
+			{
+				curr_user = d.elements[i].value;
+				form_values[curr_user] = {};
+				form_values[curr_user][d.elements[i].name] = d.elements[i].value;			
+			}
+			else if(d.elements[i].value != "Submit")
+			{
+				form_values[curr_user][d.elements[i].name] = d.elements[i].value;
+			}
+		}
+	}
+	var obj = form_values;
+	localStorage.setItem("user_register",JSON.stringify(obj));
+	
+	document.getElementById("reg_msg").innerHTML = "User Registration Successfull! Click on Login Button to go to Login page.";
+	document.getElementById("register").style.display = "none";
+}
+function readFile() 
+{
+	if (this.files && this.files[0]) 
+	{
+		var fr= new FileReader();
+    
+    		fr.addEventListener("load", function(e) 
+		{
+      			document.getElementById("base64_img").value = e.target.result;
+    		}); 
+    		fr.readAsDataURL( this.files[0] );
+  	}
+}
+
+document.getElementById("prof_img").addEventListener("change", readFile);
+</script>
+</html>
