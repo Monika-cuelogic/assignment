@@ -125,9 +125,23 @@ function add_to_do()
 	{
 		if(d.elements[i].value == "" || d.elements[i].value.length == 0)
 		{
-			document.getElementsByName(d.elements[i].name)[0].focus();
-			document.getElementById("to_do_msg").innerHTML = "<p>Please fill all the fields!</p>";
-			return false;		
+			if(d.elements[i].name == "is_done")
+			{}
+			else
+			if(d.elements[i].name == "is_public")
+			{}
+			else
+			if(d.elements[i].name == "is_reminder")
+			{}
+			else
+			if(d.elements[i].name == "r_date")
+			{}
+			else
+			{	
+				document.getElementsByName(d.elements[i].name)[0].focus();
+				document.getElementById("to_do_msg").innerHTML = "<p>Please fill all the fields!</p>";
+				return false;		
+			}
 		}
 		else
 		{	

@@ -109,6 +109,7 @@ var p_fields = document.getElementById("profile");
 
 //IIFE 
 (function(){
+	
 	var i;
 	var x = document.getElementsByClassName("s_hidden");
 	for(var j = 0 ; j < x.length ; j++)
@@ -119,6 +120,7 @@ var p_fields = document.getElementById("profile");
 
 	for(i = 0 ; i < p_fields.elements.length ; i++)
 	{
+		
 		if(p_fields.elements[i].name == "gender")
 		{
 			document.getElementById(sessionStorage.getItem("gender")).checked = true;

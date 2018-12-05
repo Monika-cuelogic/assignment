@@ -81,38 +81,55 @@ function login_user()
 	var username = document.getElementById("username").value;
 	var pass = document.getElementById("password").value;
 	var i;
+	var flag = 0;
+	for(i in get_user_details)
+	{
+		if(username !== i){}
+		else
+		{
+			flag = 1;
+		}
+	}
+	if(flag == 0)
+	{
+		document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials!</p>";
+		sessionStorage.clear();
+		return false;
+	}
+	flag = 0;
 
 	for(i in get_user_details)
 	{
-		if(username !== i)
+		for(val in get_user_details[i])
 		{
-			document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials!</p>";
-			sessionStorage.clear();
-			return false;
-		}
-		else
-		{
-			for(val in get_user_details[i])
+			if(val == "password")
 			{
-				if(val == "password")
+				if(get_user_details[i][val] == pass)
 				{
-					if(get_user_details[i][val] != pass)
-					{
-						document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials!</p>";
-						sessionStorage.clear();
-						return false;
-					}
-				}				
-				sessionStorage.setItem(val,get_user_details[i][val]);	
-				//console.log("key -> " + val + "==Value -> " + get_user_details[i][val]);
-			}
+					flag = 1;console.log(get_user_details[i][val]);
+				}
+				else
+				{
+					
+				}
+			}				
+			sessionStorage.setItem(val,get_user_details[i][val]);	
 		}
 	}
-	console.log(sessionStorage.getItem('password'));
-	console.log(sessionStorage.getItem('username'));
-	console.log(sessionStorage.getItem('firstname'));
-	console.log(sessionStorage.getItem('lastname'));
-	window.location.href = "profile.html"
+	if(flag == 1){
+	
+		/*console.log(sessionStorage.getItem('password'));
+		console.log(sessionStorage.getItem('username'));
+		console.log(sessionStorage.getItem('firstname'));
+		console.log(sessionStorage.getItem('lastname'));*/
+		window.location.href = "profile.html";
+	}
+	else{
+		document.getElementById("login_msg").innerHTML = "<p class='err_msg'>Invalid credentials1!</p>";
+						
+		sessionStorage.clear();
+		return false;
+	}
 }
 </script>
 </html>
