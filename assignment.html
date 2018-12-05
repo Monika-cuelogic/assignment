@@ -10,6 +10,12 @@
 <table>
 <tr>
 	<td>
+		<a href="login.html">Login</a>&nbsp;&nbsp;&nbsp;
+	</td>
+	
+</tr>
+<tr>
+	<td>
 		<div id="reg_msg"></div>
 	</td>	
 </tr>
@@ -102,11 +108,6 @@
 
 </td>
 </tr>
-<tr>
-	<td>
-		<input type="button" name="login" value="Login" onclick="go_to_login()">
-	</td>
-</tr>
 </table>
 </body>
 <script type="text/javascript">
@@ -137,17 +138,7 @@ function compare_pass()
 	}
 	document.getElementById("reg_msg").innerHTML = "";
 }
-function go_to_login()
-{
-	try
-	{
-		window.location.href = "login.html";
-	}
-	catch(err)
-	{
-		alert(err.message);
-	}
-}
+
 function save_data()
 {
 	var d = document.getElementById("register");
@@ -157,27 +148,60 @@ function save_data()
 	{
 		if(d.elements[i].value == "" || d.elements[i].value.length == 0)
 		{
-			console.log(d.elements[i].name);
-			document.getElementsByName(d.elements[i].name)[0].focus();
-			document.getElementById("reg_msg").innerHTML = "<p>Please fill all the fields!</p>";
-			return false;		
+			
+				console.log(d.elements[i].name);
+				document.getElementsByName(d.elements[i].name)[0].focus();
+				document.getElementById("reg_msg").innerHTML = "<p>Please fill all the fields!</p>";
+				return false;	
+			
 		}
 		else
 		{
 			if(d.elements[i].name == "username")
 			{
+				
+				var get_users = localStorage.getItem("user_register");
+				get_user_details = JSON.parse(get_users);
+				for(j in get_user_details)
+				{
+					if(j == d.elements[i].value)
+					{
+						document.getElementById("reg_msg").innerHTML = "<p>Username Exists!</p>";
+						return false;
+					}
+				}
 				curr_user = d.elements[i].value;
-				form_values[curr_user] = {};
-				form_values[curr_user][d.elements[i].name] = d.elements[i].value;			
+				form_values = {};
+				form_values[d.elements[i].name] = d.elements[i].value;			
+			}
+			else
+			if(d.elements[i].name == "firstname" || d.elements[i].name == "lastname")
+			{
+				var exp_al = /^[a-zA-Z]*$/;
+				if(exp_al.test(d.elements[i].value))
+				{
+					form_values[d.elements[i].name] = d.elements[i].value;
+				}
+				else
+				{
+					document.getElementById("reg_msg").innerHTML = "<p>Please enter characters only!</p>";
+					document.getElementsByName(d.elements[i].name)[0].focus();
+					return false;
+				}
 			}
 			else if(d.elements[i].value != "Submit")
 			{
-				form_values[curr_user][d.elements[i].name] = d.elements[i].value;
+				form_values[d.elements[i].name] = d.elements[i].value;
 			}
 		}
 	}
-	var obj = form_values;
-	localStorage.setItem("user_register",JSON.stringify(obj));
+	var get_users = localStorage.getItem("user_register");
+	get_user_details = JSON.parse(get_users);
+	//console.log(get_user_details[d.elements[i].value]);
+	//var obj = form_values;
+	get_user_details[curr_user] = form_values;
+	localStorage.setItem("user_register",JSON.stringify(get_user_details));
+	console.log(get_user_details);
 	
 	document.getElementById("reg_msg").innerHTML = "User Registration Successfull! Click on Login Button to go to Login page.";
 	document.getElementById("register").style.display = "none";
